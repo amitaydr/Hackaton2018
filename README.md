@@ -10,4 +10,6 @@ https://cs.stanford.edu/people/jcjohns/papers/eccv16/JohnsonECCV16Supplementary.
 Discriminator architecture (page 16 PatchGan 70x70):
 https://arxiv.org/pdf/1611.07004.pdf
 
+TensorFlow implementation
+https://github.com/xhujoy/CycleGAN-tensorflow
 
