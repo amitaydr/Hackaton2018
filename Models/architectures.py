@@ -18,3 +18,29 @@ def Ck(input, k, stride=2, slope=0.2, name=None, is_training=True):
                                                   is_training=is_training)
         output = tf.nn.leaky_relu(batch_norm, alpha=slope)
         return output
+
+def residual_block(input, alpha, kernel_size = 3, k=128, stride=1, slope=0.2, name=None, is_training=True):
+    """ 3X3 Conv - BatchNorm - LeakyRelu - 3X3 Conv - BatchNorm - add input directly to output"""
+    with tf.variable_scope(name):
+        conv1 = tf.layers.conv2d(inputs=input,
+                                filters=k,
+                                kernel_size=[kernel_size,kernel_size],
+                                strides=stride,
+                                padding="valid")
+
+        batch_norm1 = tf.layers.batch_normalization(conv1, training=is_training)
+        relu = tf.nn.leaky_relu(batch_norm1, alpha=slope)
+
+        conv2 = tf.layers.conv2d(inputs=relu,
+                                 filters=k,
+                                 kernel_size=[kernel_size, kernel_size],
+                                 strides=stride,
+                                 padding="valid")
+
+        batch_norm2 = tf.layers.batch_normalization(conv2, training=is_training)
+
+        #TODO cut input appropriately and use matrix addition
+        cut_side = (kernel_size - 1) / 2
+        output = batch_norm2 + alpha*(input[:,:,cut_side:-cut_side,cut_side:-cut_side])
+
+        return output
