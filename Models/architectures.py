@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 """ Discriminator layers """
-def Ck(input, k, name, stride=2, slope=0.2, is_training=True, kernel_size=4):
+def Ck(input, k, name, stride=2, slope=0.2, is_training=True, kernel_size=4, with_batch_norm=True):
     """ Convolution-BatchNorm-LeakyRelu layers with k units.
     4x4 spatial convolution filters with stride 2, LeakyRelu with slope 0.2"""
     with tf.variable_scope(name):
@@ -11,7 +11,7 @@ def Ck(input, k, name, stride=2, slope=0.2, is_training=True, kernel_size=4):
                                 kernel_size=[kernel_size, kernel_size],
                                 strides=(stride, stride),
                                 padding="same")
-        batch_norm = tf.layers.batch_normalization(conv, training=is_training)
+        batch_norm = tf.layers.batch_normalization(conv, training=is_training) if with_batch_norm else conv
         output = tf.nn.leaky_relu(batch_norm, alpha=slope)
         return output
 

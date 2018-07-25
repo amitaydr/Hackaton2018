@@ -9,22 +9,23 @@ from Models.architectures import *
 
 class Discriminator(object):
     def __init__(self):
-        self.input = tf.placeholder(tf.float32, shape=[None, 256, 256, 3], name='features')
+        self.input = tf.placeholder(tf.float32, shape=[None, 70, 70, 3], name='features')
+        self.is_training = tf.placeholder(tf.bool, name="is_training")
 
         # Ck block
-        self.C128 = Ck(self.input, 128, name="c128")
-
-        # res block 1
-        self.res_block1 = residual_block(self.C128, alpha=0.5, name="res_block")
+        self.C64 = Ck(self.input, 64, name="c64", with_batch_norm=False)
+        self.C128 = Ck(self.C64, 128, name="c128")
+        self.C256 = Ck(self.C128, 256, name="c256")
+        self.C512 = Ck(self.C128, 512, name="c512")
 
 
     def step(self, session, images):
-        outputs = session.run([self.res_block1, self.C128], {self.input.name: images})
+        outputs = session.run([self.C512, self.C256, self.C128, self.C64], {self.input.name: images})
         return outputs[0], outputs[1]
 
 
 def readImages():
-    folderName = r"C:\Users\Michal\Documents\Hackaton2018 - Datasets\Manga faces\Manga"
+    folderName = r"D:\data\hackathon\profile2manga\Manga"
     folder_images = [folderName + "/"+ f for f in os.listdir(folderName)]
     n = 5
     image_list = []
