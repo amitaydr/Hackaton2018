@@ -10,9 +10,12 @@ class Generator(object):
         self.input = tf.placeholder(tf.float32, shape=[None, 256, 256, 3], name='features')
         self.is_training = tf.placeholder(tf.bool, name="is_training")
 
-        #TODO: add reflection padding
+        #TODO: check the reflection padding
+        paddings = tf.constant([[2, 40], [3, 40]])
+        self.padded_input = tf.pad(self.input, paddings, "REFLECT")
+
         # Convolution-BatchNorm-Relu encoder layers
-        self.conv1 = Ck(self.input, 32, name="conv1", stride=1, slope=0.5, is_training=self.is_training, kernel_size=9)
+        self.conv1 = Ck(self.padded_input, 32, name="conv1", stride=1, slope=0.5, is_training=self.is_training, kernel_size=9)
         self.conv2 = Ck(self.conv1, 64, name="conv2", stride=2, slope=0.5, is_training=self.is_training, kernel_size=3)
         self.conv3 = Ck(self.conv2, 128, name="conv3", stride=2, slope=0.5, is_training=self.is_training, kernel_size=3)
 
